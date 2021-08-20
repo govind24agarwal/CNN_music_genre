@@ -124,5 +124,26 @@ def build_model(input_shape):
     return model
 
 
+def predict(model, x, y):
+    """Predict a single sample using the trained model
+
+    Args:
+        model : Trained model
+        x ([type]): Input data
+        y ([type]): Target
+    """
+
+    # add a dimension to input data for sample
+    x = x[np.newaxis, ...]
+
+    # perform prediction
+    prediction = model.predict(x)
+
+    # get index with max value
+    predicted_index = np.argmax(prediction, axis=1)
+
+    print("Target: {}, Predicted label: {}".format(y, predicted_index))
+
+
 if __name__ == "__main__":
     pass
