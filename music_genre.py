@@ -2,6 +2,7 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
+import tensorflow.keras as keras
 
 DATA_PATH = "/home/govind/Documents/ML/Velario Youtube/extracting_mfccs_music_genre/data.json"
 
@@ -79,6 +80,48 @@ def prepare_datasets(test_size=0.25, validation_size=0.2):
     x_validation = x_validation[..., np.newaxis]
 
     return x_train, x_test, x_validation, y_train, y_test, y_validation
+
+
+def build_model(input_shape):
+    """Generates CNN model
+
+    Args:
+        input_shape (tuple)): Shape of input set
+    Returns:
+        model : CNN model
+    """
+
+    # build network topology
+    model = keras.Sequential()
+
+    # 1st conv layer
+    model.add(keras.layers.Conv2D(
+        32, (3, 3), activation="relu", input_shape=input_shape,))
+    model.add(keras.layers.MaxPooling2D(
+        (3, 3), strides=(2, 2), padding="same"))
+    model.add(keras.layers.BatchNormalization())
+
+    # 2nd conv layer
+    model.add(keras.layers.Conv2D(32, (3, 3), activation="relu"))
+    model.add(keras.layers.MaxPooling2D(
+        (3, 3), strides=(2, 2), padding="same"))
+    model.add(keras.layers.BatchNormalization())
+
+    # 3rd conv layer
+    model.add(keras.layers.Conv2D(32, (2, 2), activation="relu"))
+    model.add(keras.layers.MaxPooling2D(
+        (2, 2), strides=(2, 2), padding="same"))
+    model.add(keras.layers.BatchNormalization())
+
+    # flatten output and feed it to dense layer
+    model.add(keras.layers.Flatten())
+    model.add(keras.layers.Dense(64, activation="relu"))
+    model.add(keras.layers.Dropout(0.1))
+
+    # Output layer
+    model.add(keras.layers.Dense(10, activation="softmax"))
+
+    return model
 
 
 if __name__ == "__main__":
